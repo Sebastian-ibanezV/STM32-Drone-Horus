@@ -1,9 +1,9 @@
-# DesControl / Horus Link 🛸
+# DesControl / Horus Link
 **Sistema de Estabilización de Vuelo en Cascada (Angle + Rate Control)**
 
 Este proyecto consiste en el diseño, desarrollo e implementación de un controlador de vuelo para un dron cuadricóptero, utilizando una arquitectura distribuida entre un microcontrolador de tiempo real (**STM32**) y una unidad de cómputo de alto nivel (**Raspberry Pi 5**).
 
-## 🚀 Descripción del Proyecto
+## Descripción del Proyecto
 El objetivo principal es lograr la estabilización autónoma del eje de Roll (alabeo) mediante un control en cascada. El sistema utiliza un filtro complementario para la fusión de sensores y un enlace de radiofrecuencia de baja latencia para telemetría y ajuste de parámetros en tiempo real.
 
 ### Características Principales
