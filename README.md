@@ -18,7 +18,7 @@ Se diseñó una placa personalizada para integrar los módulos, minimizar el rui
 
 | Esquema del Circuito | Vista 3D de la Placa |
 | :---: | :---: |
-| ![Esquemático](./assets/schematic.png) | ![Vista 3D](./assets/pcb_3d.png) |
+| ![Esquemático](./assets/esquema.jpeg) | ![Vista 3D](./assets/dron.jpeg) |
 *(Sustituye estas rutas por las carpetas donde guardes tus fotos)*
 
 ---
