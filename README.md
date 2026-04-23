@@ -47,9 +47,9 @@ Ubicado en la carpeta `/gcs`.
 
 ---
 
-## 📺 Demostración y Pruebas
+## Demostración y Pruebas
 
-[![Video de Demostración](https://img.youtube.com/vi/TU_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=TU_VIDEO_ID)
+[![Video de Demostración](https://youtube.com/shorts/yiALLUYhdrc)
 
 ---
 
