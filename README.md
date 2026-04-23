@@ -1,69 +1,63 @@
-# DesControl / Horus Link
-**Sistema de Estabilización de Vuelo en Cascada (Angle + Rate Control)**
+# Horus Link 
+**Sistema de Control de Vuelo en Cascada (Angle + Rate) | STM32 + Raspberry Pi 5**
 
-Este proyecto consiste en el diseño, desarrollo e implementación de un controlador de vuelo para un dron cuadricóptero, utilizando una arquitectura distribuida entre un microcontrolador de tiempo real (**STM32**) y una unidad de cómputo de alto nivel (**Raspberry Pi 5**).
-
-## Descripción del Proyecto
-El objetivo principal es lograr la estabilización autónoma del eje de Roll (alabeo) mediante un control en cascada. El sistema utiliza un filtro complementario para la fusión de sensores y un enlace de radiofrecuencia de baja latencia para telemetría y ajuste de parámetros en tiempo real.
-
-### Características Principales
-- **Control en Cascada:** Lazo externo para control de Ángulo (Jefe) y lazo interno para control de Tasa/Velocidad Angular (Obrero).
-- **Arquitectura Robusta:** Procesamiento de PID y PWM a 200 Hz en la STM32.
-- **GCS (Ground Control Station):** Interfaz en Python sobre Raspberry Pi 5 para monitoreo, graficación en tiempo real y ajuste dinámico de ganancias PID.
-- **Protocolo Custom:** Comunicación bidireccional optimizada mediante ACK Payloads sobre NRF24L01.
+Este proyecto documenta el desarrollo integral de un cuadricóptero estabilizado mediante una arquitectura de control distribuido. El sistema delega el procesamiento crítico de tiempo real a una **STM32F411** y la gestión de telemetría y sintonización a una **Raspberry Pi 5**.
 
 ---
 
-## Hardware & Arquitectura
+## Arquitectura del Sistema
 
-| Componente | Detalle |
-| :--- | :--- |
-| **Controlador de Vuelo** | STM32F411 (Blackpill) |
-| **Estación de Tierra** | Raspberry Pi 5 |
-| **IMU (Sensor)** | MPU9250 (Giroscopio + Acelerómetro) |
-| **Enlace RF** | NRF24L01+ (SPI) |
-| **Motores** | 4 Motores Brushless con ESCs (Protocolo PWM) |
+### Hardware Principal
+- **Vuelo (FC):** STM32F411CEU6 (Blackpill) - PWM @ 200Hz.
+- **Procesamiento de Datos:** Raspberry Pi 5.
+- **Sensor (IMU):** MPU9250 (Giroscopio y Acelerómetro).
+- **Comunicación:** Módulos NRF24L01+ con protocolo de baja latencia.
 
-### Diagrama de Conexión (Vista Plana)
-![Vista Plana del Dron](./path/a/tu/imagen_plana.jpg)
-*(Placeholder: Aquí se detalla la disposición del hardware y el orden de los motores M1-M4 en configuración X)*
+### Diseño de Hardware (PCB)
+Se diseñó una placa personalizada para integrar los módulos, minimizar el ruido eléctrico y optimizar la distribución de masa.
 
----
-
-## Estructura del Software
-
-### 1. STM32 (Firmware C)
-Ubicado en `/stm32_core`. Se encarga de:
-- Lectura de IMU vía I2C a alta velocidad.
-- Filtro Complementario: `0.98 * Gyro + 0.02 * Accel`.
-- Generación de señales PWM (1000us - 2000us).
-- Lógica de Failsafe ante pérdida de señal.
-
-### 2. Raspberry Pi (GCS Python)
-Ubicado en `/pi_gcs`. Ofrece:
-- **CLI Interactiva:** Comandos para armar, desarmar, calibrar y setear el acelerador.
-- **Live Tuning:** Ajuste de $K_p, K_i, K_d$ y $Kp_{angle}$ sin reiniciar el dron.
-- **Logging:** Exportación de telemetría a CSV para análisis de datos posterior.
+| Esquema del Circuito | Vista 3D de la Placa |
+| :---: | :---: |
+| ![Esquemático](./assets/schematic.png) | ![Vista 3D](./assets/pcb_3d.png) |
+*(Sustituye estas rutas por las carpetas donde guardes tus fotos)*
 
 ---
 
 ## Control en Cascada (PID)
-El sistema opera bajo la siguiente jerarquía:
-1. **Lazo de Ángulo:** Recibe el `Setpoint` en grados y genera una orden de velocidad angular.
-2. **Lazo de Rate:** Recibe la orden de velocidad y ajusta los motores para contrarrestar la inercia y perturbaciones.
+
+El dron utiliza una estructura de control jerárquica para lograr un vuelo estable en "Angle Mode":
+
+1. **Lazo Externo (Ángulo):** Procesa la inclinación actual vs. el setpoint deseado. Su salida es la velocidad angular requerida.
+2. **Lazo Interno (Rate):** El "obrero" que ajusta los motores a 200Hz para alcanzar la velocidad dictada por el lazo externo, compensando perturbaciones externas de forma inmediata.
 
 ---
 
-## Demostración en Video
-Puedes ver el funcionamiento del sistema, la respuesta del PID y la telemetría en vivo en el siguiente enlace:
+## Componentes de Software
 
-[![Video del Proyecto](https://img.youtube.com/vi/TU_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=TU_VIDEO_ID)
+### 1. Firmware STM32 (C/HAL)
+Ubicado en la carpeta `/firmware`. 
+- **Filtro Complementario:** Fusión de sensores robusta ($0.98 \times \text{Gyro} + 0.02 \times \text{Accel}$).
+- **Motor Mixer:** Algoritmo de mezcla en X para el eje de Roll.
+- **Failsafe:** Protocolo de seguridad que desarma los motores tras 15s de pérdida de enlace.
+
+### 2. Estación de Tierra (Python)
+Ubicado en la carpeta `/gcs`.
+- **Live Tuning:** Ajuste de $K_p, K_i, K_d$ desde la consola sin aterrizar.
+- **Telemetría:** Graficación en tiempo real con Matplotlib y exportación a CSV para análisis.
 
 ---
 
-## Instalación y Uso
+## 📺 Demostración y Pruebas
 
-### En la Raspberry Pi 5:
-1. Instalar dependencias:
-   ```bash
-   pip install pyrf24 matplotlib
+[![Video de Demostración](https://img.youtube.com/vi/TU_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=TU_VIDEO_ID)
+
+---
+
+## Instrucciones de Uso
+
+1. **Conexión:** Enciende el dron y verifica el LED del NRF24.
+2. **GCS:** Ejecuta `python main_gcs.py` en la Raspberry Pi.
+3. **Calibración:** Envía el comando `cal` manteniendo el dron nivelado.
+4. **Armado:** Una vez calibrado, usa `arm` y sube el throttle gradualmente con `thr 1300`.
+
+---
