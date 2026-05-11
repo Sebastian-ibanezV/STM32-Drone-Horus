@@ -16,7 +16,7 @@ Este proyecto documenta el desarrollo integral de un cuadricóptero estabilizado
 ### Diseño de Hardware (PCB)
 Se diseñó una placa personalizada para integrar los módulos, minimizar el ruido eléctrico y optimizar la distribución de masa.
 
-| Esquema del Circuito | Vista 3D de la Placa |
+| Esquema del Circuito | Vista del Dron|
 | :---: | :---: |
 | ![Esquemático](./assets/esquema.jpeg) | ![Vista 3D](./assets/dron.jpeg) |
 *(Sustituye estas rutas por las carpetas donde guardes tus fotos)*
